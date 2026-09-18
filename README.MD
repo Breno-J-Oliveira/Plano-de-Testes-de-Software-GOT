@@ -2,12 +2,11 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/Node.js-24.12.0-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="Node.js">
+  <img src="https://img.shields.io/badge/Jest-29+-C21325?style=for-the-badge&logo=jest&logoColor=white" alt="Jest">
   <img src="https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" alt="JavaScript">
-  <img src="https://img.shields.io/badge/Teste-Caixa%20Preta-blueviolet?style=for-the-badge" alt="Caixa Preta">
   <br>
-  <img src="https://img.shields.io/badge/testes-1%2F6%20passou-critical?style=flat-square" alt="Tests">
-  <img src="https://img.shields.io/badge/bugs%20encontrados-4-red?style=flat-square" alt="Bugs">
-  <img src="https://img.shields.io/badge/divergências-1-yellow?style=flat-square" alt="Divergências">
+  <img src="https://img.shields.io/badge/testes-6%2F6%20passando-brightgreen?style=flat-square&logo=jest&logoColor=white" alt="Tests">
+  <img src="https://img.shields.io/badge/bugs%20corrigidos-4%2F4-brightgreen?style=flat-square" alt="Bugs corrigidos">
   <img src="https://img.shields.io/badge/licença-ISC-blue?style=flat-square" alt="License">
 </p>
 
@@ -17,34 +16,31 @@
 
 Este projeto é um exercício de **Engenharia de Testes de Software**, focado na elaboração de um **Plano de Testes** e de uma **Matriz do GOT (Guia de Ordem de Testes)** aplicados sobre o módulo de **Checkout de um e-commerce**.
 
-O código-fonte (`carrinho.js`) representa o gabarito do professor/aluno: uma função `calcularTotal(itens, cupom)` propositalmente **defeituosa**, usada para treinar a capacidade de encontrar bugs através de **testes de caixa preta** (testando apenas entradas e saídas, sem olhar a lógica interna antes de escrever os casos).
+O código-fonte (`carrinho.js`) implementa a função `calcularTotal(itens, cupom)`, que inicialmente continha **4 bugs propositais** de regra de negócio. A partir dos casos de teste da Matriz do GOT, os bugs foram identificados, migrados para uma **suíte automatizada com Jest** e, em seguida, **corrigidos** — com todos os testes voltando a passar.
 
-Projeto desenvolvido como **exercício acadêmico/portfólio pessoal**, demonstrando domínio de planejamento de testes, rastreabilidade de casos de teste e análise de divergências entre resultado esperado x resultado obtido.
+Projeto desenvolvido como **exercício acadêmico/portfólio pessoal**, demonstrando o ciclo completo de teste de software: planejamento → execução manual → automação → identificação de falhas → correção → reexecução.
 
 ---
 
 ## O que ele entrega?
 
 ### Documentação (`docs/`)
-- **Plano de Testes de Software & GOT** (`.docx`) contendo:
-  - Identificação do projeto (sistema, versão, responsável, ambiente)
-  - Escopo e estratégia de teste
-  - Regras de negócio documentadas
-  - Matriz de rastreabilidade do GOT (ID, cenário, dados de entrada, resultado esperado x obtido)
-  - Tabela final de status (Passou / Falhou / Divergência)
+- **Plano de Testes de Software & GOT** com identificação do projeto, escopo, regras de negócio e matriz de rastreabilidade *(em processo de atualização com os novos resultados via Jest)*
+- Capturas de tela de cada etapa do processo de teste (caixa preta manual → Jest com falhas → correção → Jest 100% passando)
 
-### Código de teste (`index.js` + `carrinho.js`)
-- **6 casos de teste manuais (CT-01 a CT-06)** executados em caixa preta via `console.log`
-- Função `calcularTotal` com **bugs propositais** para validar se os casos de teste realmente detectam falhas de regra de negócio
+### Código (`carrinho.js`, `index.js`, `carrinho.test.js`)
+- `carrinho.js`: função `calcularTotal`, já **corrigida**
+- `index.js`: execução manual dos 6 casos de teste via `console.log` (versão caixa preta original)
+- `carrinho.test.js`: **suíte automatizada em Jest** com os mesmos 6 casos de teste (CT-01 a CT-06)
 
 ---
 
 ## Regras de negócio do sistema
 
-A função `calcularTotal(itens, cupom)` deveria seguir as seguintes regras:
+A função `calcularTotal(itens, cupom)` segue as seguintes regras:
 
 - **Cálculo de subtotal:** multiplicar quantidade × preço de cada item.
-- **Validação de entrada:** se o carrinho estiver vazio (`[]`), se algum item tiver quantidade `<= 0` ou preço negativo, a função deve lançar o erro `"Carrinho inválido"`.
+- **Validação de entrada:** se o carrinho estiver vazio (`[]`), ou se algum item tiver quantidade `<= 0`, preço negativo ou valor não numérico, a função deve lançar o erro `"Carrinho inválido"`.
 - **Desconto de cupom:** se o cupom for `"PROMO10"`, aplicar **10% de desconto** sobre o subtotal.
 - **Regra de frete:**
   - Subtotal **>= R$ 100,00** → frete **grátis** (R$ 0,00);
@@ -53,40 +49,57 @@ A função `calcularTotal(itens, cupom)` deveria seguir as seguintes regras:
 
 ---
 
-## Matriz do GOT — Casos de Teste
+## Evolução dos testes: caixa preta manual → Jest → correção
 
-| ID | Cenário / Regra | Dados de Entrada | Resultado Esperado | Resultado Obtido |
-|----|------------------|-------------------|---------------------|--------------------|
-| CT-01 | Frete grátis exato na borda | Item: 100.00 · Qtd: 1 · Cupom: null | Total: 100 | Total: 115 |
-| CT-02 | Aplicação de cupom 10% | Item: 50.00 · Qtd: 1 · Cupom: "PROMO10" | Total: 60 (50 - 5 + 15) | Total: 55 (50 - 0 + 15) |
-| CT-03 | Quantidade negativa | Item: 10.00 · Qtd: -2 · Cupom: null | Erro: "Carrinho inválido" | Total: -5 |
-| CT-04 | Arredondamento | Item: 33.3333 · Qtd: 1 · Cupom: null | Total: 48.33 | Total: 48.3333 |
-| CT-05 | Carrinho vazio | Itens: [] · Cupom: null | Erro: "Carrinho inválido" | Erro: "Carrinho inválido" |
-| CT-06 | Frete pago (< 100) | Item: 80.00 · Qtd: 1 · Cupom: null | Total: 95 (80 + 15) | Total: 95 |
+### 1ª etapa — Testes manuais (caixa preta)
+
+Execução inicial via `console.log` em `index.js`, comparando o resultado esperado com o obtido:
+
+<p align="center">
+  <img src="docs/captura1.png" alt="Execução dos testes manuais no terminal" width="640">
+</p>
+
+### 2ª etapa — Migração para Jest (revelando os bugs)
+
+Os mesmos 6 casos de teste foram reescritos como uma suíte automatizada (`carrinho.test.js`) com `npm test`. Rodando contra o código **ainda com bugs**, o Jest confirma exatamente as falhas já mapeadas na Matriz do GOT:
+
+<p align="center">
+  <img src="docs/captura2.png" alt="Jest FAIL - testes rodando contra o código com bugs" width="640">
+</p>
+
+<p align="center">
+  <img src="docs/captura3.png" alt="Resumo Jest - 3 falhas, 3 passaram" width="500">
+</p>
+
+| ID | Cenário | Status (antes da correção) |
+|----|---------|------------------------------|
+| CT-01 | Frete grátis exato na borda (subtotal = 100) | ❌ Falhou |
+| CT-02 | Cupom PROMO10 (10% de desconto) | ❌ Falhou |
+| CT-03 | Quantidade negativa | ✅ Passou |
+| CT-04 | Arredondamento (2 casas decimais) | ❌ Falhou |
+| CT-05 | Carrinho vazio | ✅ Passou |
+| CT-06 | Frete pago (subtotal < 100) | ✅ Passou |
+
+**Resultado:** 3 testes falharam, 3 passaram, de 6 no total — confirmando os bugs 2, 3 e 4 descritos abaixo.
+
+### 3ª etapa — Correção dos bugs e reexecução
+
+Após corrigir `carrinho.js`, a suíte Jest foi executada novamente e **todos os 6 testes passaram**:
+
+<p align="center">
+  <img src="docs/captura4.png" alt="Jest PASS - todos os testes passando após a correção" width="640">
+</p>
 
 ---
 
-## Resultado Final dos Testes
+## Bugs encontrados e como foram corrigidos
 
-| ID | Resultado Esperado | Resultado Obtido | Status |
-|----|---------------------|--------------------|--------|
-| CT-01 | 100 | 115 | ❌ Falhou |
-| CT-02 | 60 | 55 | ❌ Falhou |
-| CT-03 | Erro: Carrinho inválido | Erro: Carrinho inválido | ⚠️ Divergência |
-| CT-04 | 48,33 | 48,33 | ✅ Passou |
-| CT-05 | Erro: Carrinho inválido | Erro: Carrinho inválido | ✅ Passou |
-| CT-06 | 95 | 95 | ✅ Passou |
-
-> **Resumo:** de 6 casos de teste, **3 passaram**, **2 falharam** e **1 apresentou divergência** — divergência essa que, apesar de a mensagem de erro estar correta, precisa ser confirmada quanto à quantidade negativa não ser tratada com uma regra de validação explícita (a função apenas verifica se o subtotal final ficou negativo).
-
-### Bugs encontrados no código (`carrinho.js`)
-
-| # | Bug | Onde | Impacto |
-|---|-----|------|---------|
-| 1 | Não valida `quantidade <= 0` nem `preco < 0` item a item | Loop de cálculo do subtotal | Quantidades/preços inválidos só são barrados indiretamente, se o subtotal total ficar negativo |
-| 2 | Cupom `"PROMO10"` desconta **R$ 10,00 fixos** em vez de **10%** do subtotal | Cálculo de desconto | Desconto incorreto em qualquer valor de subtotal diferente de R$ 100,00 |
-| 3 | Condição de frete grátis usa `>` em vez de `>=` | Cálculo de frete | Subtotal de exatamente R$ 100,00 paga frete indevidamente |
-| 4 | Resultado final não é arredondado com `toFixed(2)` | Retorno da função | Valores com dízimas (ex: `48.3333`) em vez de 2 casas decimais |
+| # | Bug (antes) | Correção (depois) |
+|---|-------------|---------------------|
+| 1 | Não validava `quantidade <= 0`, `preco < 0` nem valores não numéricos item a item | Validação item a item com `Number.isFinite()` e checagem de `preco < 0` / `quantidade <= 0`, lançando `"Carrinho inválido"` |
+| 2 | Cupom `"PROMO10"` descontava **R$ 10,00 fixos** em vez de **10%** | Desconto passou a ser calculado como `subtotal * 0.10` |
+| 3 | Condição de frete grátis usava `>` em vez de `>=`, cobrando frete indevido em exatamente R$ 100 | Condição corrigida para `subtotal >= 100` |
+| 4 | Resultado final não era arredondado, retornando dízimas (ex: `48.3333`) | Retorno agora passa por `Number(total.toFixed(2))`, garantindo 2 casas decimais |
 
 ---
 
@@ -96,7 +109,8 @@ A função `calcularTotal(itens, cupom)` deveria seguir as seguintes regras:
 |--------|-----------|
 | Runtime | Node.js 24.12.0 |
 | Linguagem | JavaScript (CommonJS) |
-| Estratégia de Teste | Testes manuais de Caixa Preta |
+| Framework de Testes | Jest |
+| Estratégia de Teste | Caixa preta manual → testes automatizados |
 | Documentação | Microsoft Word (.docx) — Plano de Testes & Matriz do GOT |
 
 ---
@@ -106,10 +120,13 @@ A função `calcularTotal(itens, cupom)` deveria seguir as seguintes regras:
 ```
 teste_carrinho/
 ├── docs/
-│   ├── Plano de Testes de Software & GOT.docx   Documento completo do plano de testes
-│   └── captura1.png                              Print da execução dos testes no terminal
-├── carrinho.js                                    Função calcularTotal (código com bugs propositais)
-├── index.js                                       Execução dos 6 casos de teste (CT-01 a CT-06)
+│   ├── captura1.png     Execução manual (caixa preta) no terminal
+│   ├── captura2.png     Jest FAIL - testes revelando os bugs
+│   ├── captura3.png     Resumo Jest com falhas (3 failed, 3 passed)
+│   └── captura4.png     Jest PASS - todos os testes passando após correção
+├── carrinho.js          Função calcularTotal (já corrigida)
+├── index.js             Execução manual dos 6 casos de teste (CT-01 a CT-06)
+├── carrinho.test.js     Suíte automatizada em Jest (CT-01 a CT-06)
 ├── package.json
 └── README.md
 ```
@@ -121,28 +138,31 @@ teste_carrinho/
 ### Pré-requisitos
 - Node.js instalado (v18+)
 
-### 1. Clone
+### 1. Clone e instale as dependências
 
 ```bash
 git clone https://github.com/Breno-J-Oliveira/Plano-de-Testes-de-Software-GOT.git
 cd Plano-de-Testes-de-Software-GOT
+npm install
 ```
 
-### 2. Execute os testes manuais
+### 2. Rode a suíte de testes automatizada (Jest)
+
+```bash
+npm test
+```
+
+### 3. (Opcional) Rode a versão manual de caixa preta
 
 ```bash
 node index.js
 ```
 
-A saída no terminal mostra o resultado de cada caso de teste (CT-01 a CT-06), comparando o valor esperado com o valor retornado pela função `calcularTotal`.
-
 ---
 
-## Captura de Tela — Execução dos Testes
+## Nota sobre a documentação
 
-<p align="center">
-  <img src="docs/captura1.png" alt="Execução dos testes manuais no terminal" width="640">
-</p>
+O documento `Plano de Testes de Software & GOT.docx` (Matriz do GOT completa) ainda reflete a **primeira rodada de testes manuais**. Ele será atualizado em breve para incluir a suíte Jest e os resultados finais pós-correção mostrados neste README.
 
 ---
 
